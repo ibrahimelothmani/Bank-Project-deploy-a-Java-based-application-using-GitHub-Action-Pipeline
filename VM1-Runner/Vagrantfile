@@ -74,5 +74,11 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
   # update system
   apt update -y
+  # install maven
+  sudo apt install maven -y
+  sudo apt-get update
+  # install unzip
+  sudo apt-get install unzip -y
+  
   SHELL
 end
