@@ -15,3 +15,32 @@
           - maven
           - unzip
         state: present
+
+---
+- name: Install Docker, add User and make new Docker Group
+  hosts: sonarqube
+  become: true
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required packages
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+        state: present
+
+    - name: Add vagrant user to docker group
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+
+    - name: Create new Docker group
+      group:
+        name: docker
+        state: present
