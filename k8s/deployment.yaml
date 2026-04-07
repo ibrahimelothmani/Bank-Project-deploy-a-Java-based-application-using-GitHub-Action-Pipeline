@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bank-project
+  labels:
+    app: bank-project
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bank-project
+  template:
+    metadata:
+      labels:
+        app: bank-project
+        ## Required annotations for Prometheus to scrape your application metrics
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: bank-project
+          image: docker.io/ibrahimelothmani98/bank-project:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"

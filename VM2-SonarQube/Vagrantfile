@@ -1,39 +1,37 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  # Base box
   config.vm.box = "generic/ubuntu2204"
 
-  # Forward SonarQube port to host (HOST:9001 → VM:9000)
-  config.vm.network "forwarded_port", guest: 9000, host: 9001, auto_correct: true
+  # Forward host 9001 → VM 9001
+  config.vm.network "forwarded_port", guest: 9001, host: 9001, auto_correct: true
 
-  # Provider config
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "2048"
     vb.cpus = 2
   end
 
-  # Provisioning
   config.vm.provision "shell", inline: <<-SHELL
-    # Update system
+    set -e
+
+    echo "📦 Updating system..."
     apt update -y
 
-    # Install Docker
+    echo "🐳 Installing Docker..."
     apt install -y docker.io
 
-    # Enable and start Docker
     systemctl enable docker
     systemctl start docker
 
-    # Add users to docker group
     usermod -aG docker vagrant
 
-    # Run SonarQube on VM port 9000
+    echo "🚀 Running SonarQube on port 9001..."
+
     docker run -d \
       --name sonar \
-      -p 9000:9000 \
+      -p 9001:9000 \
       --restart unless-stopped \
       sonarqube:lts-community
+
+    echo "✅ SonarQube is available on: http://localhost:9001"
   SHELL
 end
